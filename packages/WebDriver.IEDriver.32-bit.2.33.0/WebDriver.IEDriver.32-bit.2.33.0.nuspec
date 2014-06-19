@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>WebDriver.IEDriver.32-bit</id>
+    <version>2.33.0</version>
+    <title>WebDriver IEDriver (32-bit)</title>
+    <authors>selenium</authors>
+    <owners>selenium</owners>
+    <projectUrl>http://code.google.com/p/selenium/downloads/list</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>IEDriver for WebDriver (32-bit)</description>
+  </metadata>
+</package>
