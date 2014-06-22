@@ -9,8 +9,8 @@ mailer tester
 Входит повторно и проверяет наличие письма от "себя"
 
 Параметры appSettings:
-browser - "chrome", "safari", "firefox", "ie"
-mailerAddress - адрес в формате mail.ru (без схемы) 
-username - имя пользователя
-password - пароль. Если установлена пустая строка, пароль можно будет ввести во время выполнения.
+browser - "chrome", "safari", "firefox", "ie";
+mailerAddress - адрес в формате mail.ru (без схемы); 
+username - имя пользователя;
+password - пароль. Если установлена пустая строка, пароль можно будет ввести во время выполнения;
 isLogEnabled - включение/отключение вывода в файл (WebMail.log).
