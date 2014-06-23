@@ -11,6 +11,7 @@ namespace acumatica
         static void Main(string[] args)
             {
             WebMailDriver wmd = new WebMailDriver();
+            wmd.NavigateToDestination();
             wmd.Auth();
             wmd.sendMessage();
                     

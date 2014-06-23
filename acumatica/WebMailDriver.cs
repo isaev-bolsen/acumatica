@@ -34,12 +34,15 @@ namespace acumatica
             }
             log(DateTime.Now.ToString());
             driver = WebDriverFactory.getWebDriver(System.Configuration.ConfigurationManager.AppSettings["browser"]);
+            }
             
+        public void NavigateToDestination()
+            {
             driver.Url = "https://" + System.Configuration.ConfigurationManager.AppSettings["mailerAddress"];
             log("Browser directed to " + driver.Url);
             driver.Navigate();
-            
             }
+
         public string Auth()
             {
             //ввести логин и пароль и нажать кнопку "войти"
@@ -66,49 +69,50 @@ namespace acumatica
             var submitButton=driver.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"mailbox__auth__button\"]"));//?
             submitButton.Click();
             log("Navigating to 'inbox'");
-            System.Threading.Thread.Sleep(1000);//
             return "Authentication form operations successful";
             }
 
         public string sendMessage()
             {
+            var wait =new OpenQA.Selenium.Support.UI.WebDriverWait(driver, new TimeSpan(0, 0, 30));
+
             //нажать на кнопку "отправить письмо".
             try
                 {
-                var ComposeButton = driver.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"b-toolbar__left\"]/div/div/div[2]/div/a/span"));
+                var ComposeButton = wait.Until(d=>d.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"b-toolbar__left\"]/div/div/div[2]/div/a/span")));
                 ComposeButton.Click();
                 log("Navigating to 'compose'");
-                System.Threading.Thread.Sleep(1000);//
+                System.Threading.Thread.Sleep(1000);
                 }
-            catch (OpenQA.Selenium.NoSuchElementException exc)
+            catch (Exception exc)
                 {
                 log("Authentication failed or 'compose' button not available");
                 return "Authentication failed or 'compose' button not available";    
                 }
             //Задать получателя
             log("Trying to set destination address...");
-            OpenQA.Selenium.IWebElement toField;
             try
                 {
-                toField = driver.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"compose__header__content\"]/div[2]/div[2]/div[1]/input[3]"));
+                var waitToField = new OpenQA.Selenium.Support.UI.WebDriverWait(driver, new TimeSpan(0, 0, 30));
+                OpenQA.Selenium.IWebElement toField = waitToField.Until(d => d.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"compose__header__content\"]/div[2]/div[2]/div[1]/input[3]"))); //*[@id="compose__header__content"]/div[2]/div[2]/div[1]/input[3]
+                toField.SendKeys(System.Configuration.ConfigurationManager.AppSettings["username"] + "@" + System.Configuration.ConfigurationManager.AppSettings["mailerAddress"] + "\n");
+                log("Destination set");
                 }
-            catch (Exception exc)
+            catch (OpenQA.Selenium.NoSuchElementException exc)
                 {
-                System.Threading.Thread.Sleep(1000);//
-                toField = driver.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"compose__header__content\"]/div[2]/div[2]/div[1]/input[3]"));
+                log("Can't set destination");
                 }
-            toField.SendKeys(System.Configuration.ConfigurationManager.AppSettings["username"] + "@" + System.Configuration.ConfigurationManager.AppSettings["mailerAddress"] + "\n");
-            log("Destination set");
+            
             //Нажать на кнопку "Отправить"
             log("Trying to find 'send' button");
             var sendButton = driver.FindElement(OpenQA.Selenium.By.XPath("//*[@id=\"b-toolbar__right\"]/div[3]/div/div/div[1]/div/span"));
             sendButton.Click();
-            
-            System.Threading.Thread.Sleep(1000);//
             try
                 {
                 //На случай возникновения вопросов вида а вы уверены, что хотите отправить пустое письмо?
-                var confirmForm = driver.FindElement(OpenQA.Selenium.By.ClassName("is-submit_empty_message_in"));
+                //var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(driver, new TimeSpan(0, 0, 60));
+
+                var confirmForm = wait.Until(d=> d.FindElement(OpenQA.Selenium.By.ClassName("is-submit_empty_message_in")));
                 log("Yes,  i need to send empty message...");
                 var confirmButton = confirmForm.FindElement(OpenQA.Selenium.By.ClassName("confirm-ok"));
                 confirmButton.Click();
@@ -126,10 +130,11 @@ namespace acumatica
             driver.Navigate();
             log("Browser directed to " + driver.Url);
             this.Auth();
-            System.Threading.Thread.Sleep(1000);//
             //проверяем наличие
             log("Trying to find message in inbox...");
-            var mailItems = driver.FindElements(OpenQA.Selenium.By.ClassName("b-datalist__item__link"));
+            System.Threading.Thread.Sleep(1000);
+            var waitMailItems = new OpenQA.Selenium.Support.UI.WebDriverWait(driver, new TimeSpan(0, 1, 0));
+            var mailItems = waitMailItems.Until(d=>d.FindElements(OpenQA.Selenium.By.ClassName("b-datalist__item__link")));
             foreach (var mailIten in mailItems)
                 {
                 string title = mailIten.GetAttribute("title");
